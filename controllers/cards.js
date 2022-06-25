@@ -8,8 +8,8 @@ const getCards = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-  const userId = req.user._id;
-  Card.create({ name, link, userId })
+  const owner = req.user._id;
+  Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -39,8 +39,8 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const userId = req.user._id;
-  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: userId } }, { new: true })
+  const owner = req.user._id;
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: owner } }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
@@ -58,8 +58,8 @@ const likeCard = (req, res) => {
 };
 
 const dislikeCard = (req, res) => {
-  const userId = req.user._id;
-  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: userId } }, { new: true })
+  const owner = req.user._id;
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: owner } }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
