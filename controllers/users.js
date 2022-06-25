@@ -5,7 +5,13 @@ const createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 };
 
 const getAllUser = (req, res) => {
@@ -15,9 +21,21 @@ const getAllUser = (req, res) => {
 };
 
 const getUser = (req, res) => {
-  User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.path === '_id') {
+        res.status(400).send({ message: 'Неправильный id' });
+      } else {
+        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 };
 
 const profileUpdate = (req, res) => {
