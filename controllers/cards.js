@@ -49,7 +49,7 @@ const likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.path === '_id') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Карточка с данным id не найдена' });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
@@ -68,7 +68,7 @@ const dislikeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.path === '_id') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Карточка с данным id не найдена' });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
