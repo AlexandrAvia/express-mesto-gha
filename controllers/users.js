@@ -1,10 +1,29 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
+    .then((user) => res.status(201).send({
+      data: {
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      },
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
@@ -72,6 +91,22 @@ const avatarUpdate = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
 };
 
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findUserByCredentials(email, password)
+    .then((user) => {
+      // создадим токен
+      const token = jwt.sign(
+        { _id: user._id },
+        'super-puper-strong-secret',
+        { expiresIn: '7d' },
+      );
+      // вернём токен
+      res.send({ token });
+    })
+    .catch(next);
+};
+
 module.exports = {
-  createUser, getAllUser, getUser, profileUpdate, avatarUpdate,
+  createUser, getAllUser, getUser, profileUpdate, avatarUpdate, login,
 };
