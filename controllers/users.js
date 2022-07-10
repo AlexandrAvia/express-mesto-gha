@@ -31,14 +31,12 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные'));
-        return;
-      } if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new ConflictError('Введеный email был зарегистрирован ранее'));
-        return;
+      } else {
+        next(err);
       }
-      next();
-    })
-    .catch(next);
+    });
 };
 
 const getAllUser = (req, res, next) => {
@@ -119,8 +117,7 @@ const login = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  const id = req.user._id;
-  User.findById(id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw new UnauthorizedError('Запрашиваемый пользователь не найден');
