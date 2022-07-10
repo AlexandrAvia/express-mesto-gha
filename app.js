@@ -21,15 +21,15 @@ app.use(bodyParser.urlencoded({ extended: true })); // для приёма ве�
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
-    password: Joi.string().required(),
+    password: Joi.string().required().min(8),
   }),
 }), login);
 app.post('/signup', celebrate({
   body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
-    password: Joi.string().email().required(),
     avatar: Joi.string().pattern(new RegExp(regex)),
   }),
 }), createUser);
