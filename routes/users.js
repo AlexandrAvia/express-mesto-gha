@@ -7,6 +7,7 @@ const {
 } = require('../controllers/users');
 
 router.get('/users', getAllUser);
+router.get('/users/me', getCurrentUser);
 router.get('/users/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().hex().length(24).required(),
@@ -23,6 +24,5 @@ router.patch('/users/me/avatar', celebrate({
     avatar: Joi.string().required().pattern(new RegExp(regex)).required(),
   }),
 }), avatarUpdate);
-router.get('/users/me', getCurrentUser);
 
 module.exports = router;
