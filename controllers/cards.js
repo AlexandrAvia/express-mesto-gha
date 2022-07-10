@@ -20,22 +20,19 @@ const createCard = (req, res) => {
     });
 };
 
-const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+const deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Карточка не найдена' });
-        return;
+        throw new Error('Карточка не найдена');
       }
-      res.send({ data: card });
+      if (card.owner.toString() !== req.user._id) {
+        throw new Error('Вы можете удалить только собственные карточки');
+      }
+      return card.remove();
     })
-    .catch((err) => {
-      if (err.path === '_id') {
-        res.status(400).send({ message: 'Карточка с данным id не найдена' });
-      } else {
-        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
-      }
-    });
+    .then((card) => res.send({ data: card }))
+    .catch(next);
 };
 
 const likeCard = (req, res) => {

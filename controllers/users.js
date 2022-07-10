@@ -107,6 +107,19 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
+const getCurrentUser = (req, res, next) => {
+  const id = req.user._id;
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: 'Запрашиваемый пользователь не найден' });
+        return;
+      }
+      res.send({ data: user });
+    })
+    .catch(next);
+};
+
 module.exports = {
-  createUser, getAllUser, getUser, profileUpdate, avatarUpdate, login,
+  createUser, getAllUser, getUser, profileUpdate, avatarUpdate, login, getCurrentUser,
 };
