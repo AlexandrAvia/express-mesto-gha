@@ -46,8 +46,8 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode, message } = err;
-  if (statusCode === 500) {
-    res.status(statusCode).send('Внутрення ошибка сервера');
+  if (!statusCode) {
+    res.status(500).send('Внутрення ошибка сервера');
   }
   res.status(statusCode).send({ message });
   next();
