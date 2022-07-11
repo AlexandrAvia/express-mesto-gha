@@ -1,8 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, errors, Joi } = require('celebrate');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
@@ -47,6 +46,9 @@ app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode, message } = err;
+  if (statusCode === 500) {
+    res.status(statusCode).send('Внутрення ошибка сервера');
+  }
   res.status(statusCode).send({ message });
   next();
 });
