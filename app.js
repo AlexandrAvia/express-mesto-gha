@@ -57,5 +57,3 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log('Всё гуд!');
 });
-
-// проверка ключа, потом удалить
